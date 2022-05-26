@@ -1,7 +1,9 @@
 const Apify = require('apify');
 const playwright = require('playwright');
 const { handlePage } = require('./src/routes');
-const md5 = require('crypto-js/md5')
+const md5 = require('crypto-js/md5');
+const { archiveKVS } = require('./src/helpers');
+const mime = require('mime-types');
 
 const { utils: { log } } = Apify;
 
@@ -31,17 +33,28 @@ Apify.main(async () => {
             const { url, userData: { label } } = context.request;
             log.info('Page opened.', { label, url });
 
-            const store = await Apify.openKeyValueStore(cleanURL(context.request.url))
+            const urlHash = cleanURL(context.request.url)
+            const store = await Apify.openKeyValueStore(urlHash)
 
             await handlePage(context, proxyConfiguration)
 
-            // finished! wrap up things here, push 
+            // finished! wrap up things here, save to ZIP, then to default KVS and then push to dataset
+            const zipBuffer = await archiveKVS(store, urlHash)
+            const fileName = `${urlHash}.zip`
+
+            await Apify.setValue(fileName, zipBuffer, { contentType: 'application/zip' })
+
+            const defaultKVS = await Apify.openKeyValueStore()
+
+            await Apify.pushData({
+                url,
+                urlHash,
+                download: defaultKVS.getPublicUrl(fileName)
+            })
         },
 
         preNavigationHooks: [
             async ({ request, page }) => {
-                let i = 0
-
                 const baseUrl = cleanURL(request.url)
                 const store = await Apify.openKeyValueStore(baseUrl)
                 
@@ -53,10 +66,7 @@ Apify.main(async () => {
                         if (!contentType.startsWith('image') || contentType.includes('svg')) return
 
                         const body = await response.body()
-
-                        i++
-                        await store.setValue(`${i}`, body, { contentType })
-                        console.log('resp parsed')
+                        await store.setValue(`${cleanURL(response.url())}-${mime.extension(contentType)}`, body, { contentType })
                     }
                 })
             }
