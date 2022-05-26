@@ -39,7 +39,7 @@ Apify.main(async () => {
             console.log('finished')
 
             await Apify.metamorph('jaroslavhejlek/zip-key-value-store', {
-                keyValueStoreId: store.id
+                storeId: store.id
             })
 
             await store.drop()
