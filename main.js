@@ -1,14 +1,13 @@
-/**
- * This template is a production ready boilerplate for developing with `PlaywrightCrawler`.
- * Use this to bootstrap your projects using the most up-to-date code.
- * If you're looking for examples or want to learn more, see README.
- */
-
 const Apify = require('apify');
-// const playwright = require('playwright');
-const { handleStart, handleList, handleDetail } = require('./src/routes');
+const playwright = require('playwright');
+const { handlePage } = require('./src/routes');
+const md5 = require('crypto-js/md5')
 
 const { utils: { log } } = Apify;
+
+function cleanURL(url) {
+    return md5(url)
+}
 
 Apify.main(async () => {
     const { startUrls } = await Apify.getInput();
@@ -22,30 +21,40 @@ Apify.main(async () => {
         requestQueue,
         proxyConfiguration,
         launchContext: {
-            // To use Firefox or WebKit on the Apify Platform,
-            // don't forget to change the image in Dockerfile
-            // launcher: playwright.firefox,
-            useChrome: true,
-            // We don't have 'stealth' for Playwright yet.
-            // Try using Firefox, it is naturally stealthy.
+            launcher: playwright.firefox,
         },
         browserPoolOptions: {
-            // This allows browser to be more effective against anti-scraping protections.
-            // If you are having performance issues try turning this off.
             useFingerprints: true,
         },
+
         handlePageFunction: async (context) => {
             const { url, userData: { label } } = context.request;
             log.info('Page opened.', { label, url });
-            switch (label) {
-                case 'LIST':
-                    return handleList(context);
-                case 'DETAIL':
-                    return handleDetail(context);
-                default:
-                    return handleStart(context);
-            }
+
+            await handlePage(context, proxyConfiguration)
         },
+
+        preNavigationHooks: [
+            async ({ request, page }) => {
+                let i = 0
+
+                const baseUrl = cleanURL(request.url)
+                
+                page.on('response', async (response) => {
+                    await response.finished()
+
+                    if (response.ok()) {
+                        const contentType = await response.headerValue('content-type')
+                        if (!contentType.startsWith('image') || contentType.includes('svg')) return
+
+                        const body = await response.body()
+
+                        i++
+                        await Apify.setValue(`${baseUrl}-${i}`, body, { contentType })
+                    }
+                })
+            }
+        ]
     });
 
     log.info('Starting the crawl.');

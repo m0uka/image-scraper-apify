@@ -4,6 +4,7 @@
 	"description": "This is a boilerplate of an Apify actor.",
 	"dependencies": {
 		"apify": "^2.3.2",
+		"crypto-js": "^4.1.1",
 		"playwright": "*"
 	},
 	"devDependencies": {

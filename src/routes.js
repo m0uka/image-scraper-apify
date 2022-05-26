@@ -2,14 +2,16 @@ const Apify = require('apify');
 
 const { utils: { log } } = Apify;
 
-exports.handleStart = async ({ request, page }) => {
-    // Handle Start URLs
-};
+exports.handlePage = async ({ request, page }, proxyConfiguration) => {
+    // scroll down
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
 
-exports.handleList = async ({ request, page }) => {
-    // Handle pagination
-};
+    // give the page a chance to load some lazily loaded images
+    await page.waitForLoadState();
 
-exports.handleDetail = async ({ request, page }) => {
-    // Handle details
+    // try to scroll again
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await page.waitForLoadState();
+
+    await page.waitForTimeout(3000)
 };
