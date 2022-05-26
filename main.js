@@ -6,7 +6,7 @@ const md5 = require('crypto-js/md5')
 const { utils: { log } } = Apify;
 
 function cleanURL(url) {
-    return md5(url)
+    return md5(url).toString()
 }
 
 Apify.main(async () => {
@@ -31,7 +31,18 @@ Apify.main(async () => {
             const { url, userData: { label } } = context.request;
             log.info('Page opened.', { label, url });
 
+            const store = await Apify.openKeyValueStore(cleanURL(context.request.url))
+
             await handlePage(context, proxyConfiguration)
+
+            // finished! wrap up things here, save images to a zip file and then save to dataset
+            console.log('finished')
+
+            await Apify.metamorph('jaroslavhejlek/zip-key-value-store', {
+                keyValueStoreId: store.id
+            })
+
+            await store.drop()
         },
 
         preNavigationHooks: [
@@ -39,6 +50,7 @@ Apify.main(async () => {
                 let i = 0
 
                 const baseUrl = cleanURL(request.url)
+                const store = await Apify.openKeyValueStore(baseUrl)
                 
                 page.on('response', async (response) => {
                     await response.finished()
@@ -50,7 +62,8 @@ Apify.main(async () => {
                         const body = await response.body()
 
                         i++
-                        await Apify.setValue(`${baseUrl}-${i}`, body, { contentType })
+                        await store.setValue(`${i}`, body, { contentType })
+                        console.log('resp parsed')
                     }
                 })
             }
