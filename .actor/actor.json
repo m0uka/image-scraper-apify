@@ -1,0 +1,47 @@
+{
+    "actorSpecification": 1,
+    "name": "image-scraper",
+    "title": "Image Scraper",
+    "description": "Scrapes images and uploads them to a KVS.",
+    "version": "1.0.0",
+    "storages": {
+        "dataset": {
+            "actorSpecification": 1,
+            "title": "Image Sccraper",
+            "description": "To see all scraped properties, export the whole dataset or select All fields instead of Overview",
+            "views": {
+                "overview": {
+                    "title": "Overview",
+                    "description": "",
+                    "transformation": {
+                        "fields": [
+                            "url",
+                            "urlHash",
+                            "download"
+                        ]
+                    },
+                    "display": {
+                        "component": "table",
+                        "columns": [
+                            {
+                                "label": "URL",
+                                "format": "text",
+                                "field": "url"
+                            },
+                            {
+                                "label": "URL hash",
+                                "format": "text",
+                                "field": "urlHash"
+                            },
+                            {
+                                "label": "Download archive",
+                                "format": "link",
+                                "field": "download"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}
