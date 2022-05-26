@@ -35,14 +35,7 @@ Apify.main(async () => {
 
             await handlePage(context, proxyConfiguration)
 
-            // finished! wrap up things here, save images to a zip file and then save to dataset
-            console.log('finished')
-
-            await Apify.metamorph('jaroslavhejlek/zip-key-value-store', {
-                storeId: store.id
-            })
-
-            await store.drop()
+            // finished! wrap up things here, push 
         },
 
         preNavigationHooks: [
