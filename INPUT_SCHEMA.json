@@ -1,6 +1,6 @@
 {
-  "title": "PlaywrightCrawler Template",
-  "description": "lorem ipsum",
+  "title": "Image Scraper",
+  "description": "Input settings",
   "type": "object",
   "schemaVersion": 1,
   "properties": {
