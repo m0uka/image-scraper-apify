@@ -65,6 +65,9 @@ Apify.main(async () => {
                         const contentType = await response.headerValue('content-type')
                         if (!contentType.startsWith('image') || contentType.includes('svg')) return
 
+                        console.log(contentType)
+                        console.log(`${cleanURL(response.url())}-${mime.extension(contentType)}`)
+
                         const body = await response.body()
                         await store.setValue(`${cleanURL(response.url())}-${mime.extension(contentType)}`, body, { contentType })
                     }
