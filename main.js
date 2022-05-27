@@ -44,7 +44,8 @@ Apify.main(async () => {
 
             await Apify.setValue(fileName, zipBuffer, { contentType: 'application/zip' })
 
-            const defaultKVS = await Apify.openKeyValueStore()
+            const today = new Date().toISOString().slice(0, 10)
+            const defaultKVS = await Apify.openKeyValueStore(`image-scraper-${today}`)
 
             await Apify.pushData({
                 url,
