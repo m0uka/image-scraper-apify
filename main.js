@@ -56,7 +56,10 @@ Apify.main(async () => {
         preNavigationHooks: [
             async ({ request, page }) => {
                 const baseUrl = cleanURL(request.url)
-                const store = await Apify.openKeyValueStore(baseUrl)
+
+                let store = await Apify.openKeyValueStore(baseUrl)
+                await store.drop()
+                store = await Apify.openKeyValueStore(baseUrl)
                 
                 page.on('response', async (response) => {
                     await response.finished()
@@ -64,9 +67,6 @@ Apify.main(async () => {
                     if (response.ok()) {
                         const contentType = await response.headerValue('content-type')
                         if (!contentType.startsWith('image') || contentType.includes('svg')) return
-
-                        console.log(contentType)
-                        console.log(`${cleanURL(response.url())}-${mime.extension(contentType)}`)
 
                         const body = await response.body()
                         await store.setValue(`${cleanURL(response.url())}-${mime.extension(contentType)}`, body, { contentType })
