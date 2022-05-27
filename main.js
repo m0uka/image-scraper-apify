@@ -12,11 +12,11 @@ function cleanURL(url) {
 }
 
 Apify.main(async () => {
-    const { startUrls } = await Apify.getInput();
+    const { startUrls, proxy } = await Apify.getInput();
 
     const requestList = await Apify.openRequestList('start-urls', startUrls);
     const requestQueue = await Apify.openRequestQueue();
-    const proxyConfiguration = await Apify.createProxyConfiguration();
+    const proxyConfiguration = await Apify.createProxyConfiguration(proxy);
 
     const crawler = new Apify.PlaywrightCrawler({
         requestList,

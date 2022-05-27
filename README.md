@@ -1,33 +1,26 @@
-# PlaywrightCrawler project
+# Image Scraper
 
-This template is a production ready boilerplate for developing with `PlaywrightCrawler`.
-Use this to bootstrap your projects using the most up-to-date code.
+A simple scraper that scrapes all images from a website, archives them to a zip file, and then pushes a download link to the dataset.
 
-If you're looking for examples or want to learn more visit:
+## Use Cases
 
-- [Documentation](https://sdk.apify.com/docs/api/playwright-crawler)
-- [Examples](https://sdk.apify.com/docs/examples/playwright-crawler)
+You can use this scraper in order to download images from a certain website - useful for tracking blog posts, new posts, etc..
 
-## Documentation reference
+## Input
 
-- [Apify SDK](https://sdk.apify.com/)
-- [Apify Actor documentation](https://docs.apify.com/actor)
-- [Apify CLI](https://docs.apify.com/cli)
+The actor only needs to know which websites to get images from, and which proxies to use.
+You can specify multiple websites to get multiple results on one run.
 
-## Writing a README
+## Results
 
-See our tutorial on [writing READMEs for your actors](https://help.apify.com/en/articles/2912548-how-to-write-great-readme-for-your-actors) if you need more inspiration.
+The actor stores its result in the default dataset associated with the actor run. It can be then exported to various formats, such as JSON, XML, CSV or Excel.
 
-### Table of contents
+Each website in the dataset will contain a seperate object that follows this format (JSON is used below):
 
-If your README requires a table of contents, use the template below and make sure to keep the `<!-- toc start -->` and `<!-- toc end -->` markers.
-
-<!-- toc start -->
-- Introduction
-- Use Cases
-  - Case 1
-  - Case 2
-- Input
-- Output
-- Miscellaneous
- <!-- toc end -->
+```json
+{
+  "url": "https://apify.com",
+  "urlHash": "d0734ca443cdd7bb52b219011c750508",
+  "download": "https://api.apify.com/v2/key-value-stores/e4QDEvYo5hNPCZeJr/records/d0734ca443cdd7bb52b219011c750508.zip"
+}
+```

@@ -10,8 +10,19 @@
       "description": "URLs to start with.",
       "editor": "requestListSources",
       "prefill": [
-        { "url": "https://apify.com" }
+        {
+          "url": "https://apify.com"
+        }
       ]
+    },
+    "proxy": {
+      "title": "Proxy configuration",
+      "type": "object",
+      "description": "Select proxies to be used by the scraper.",
+      "prefill": {
+        "useApifyProxy": true
+      },
+      "editor": "proxy"
     }
   },
   "required": [
