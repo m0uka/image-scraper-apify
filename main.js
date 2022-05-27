@@ -44,14 +44,15 @@ Apify.main(async () => {
 
             await Apify.setValue(fileName, zipBuffer, { contentType: 'application/zip' })
 
-            const today = new Date().toISOString().slice(0, 10)
-            const defaultKVS = await Apify.openKeyValueStore(`image-scraper-${today}`)
+            const defaultKVS = await Apify.openKeyValueStore()
 
             await Apify.pushData({
                 url,
                 urlHash,
                 download: defaultKVS.getPublicUrl(fileName)
             })
+
+            await store.drop()
         },
 
         preNavigationHooks: [
